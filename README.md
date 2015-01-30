@@ -40,10 +40,21 @@ Todo: design RESTful interface to work with the on-off control provided by the n
 Using the logic below, as found by @notbrainsurgery here: http://notbrainsurgery.livejournal.com/38622.html we can drive the motors independantly to create a more fully functional arm.
 
 #### USB Interface
+From the site above, 
 > The device is controlled by 3 byte commands sent via USB control transfers. Command format is byte0, byte1, byte2. Each byte controls a group of arm features. All motors could be controlled independently. Most commands start action which is continued until next action is signalled. Byte '00' universally used as stop action.
 
 ##### Byte 0
-This table helps represent the calculations requried for the first byte of the 3, this controls the main functions of the arm structure, Shoulder (SH), Elbow (EL), Wrist (WR) and Gripper (GR) - for UP (Clockwise when viewed from the side), DW (Down, Counter-Clockwise when viewed from the side), OP (Open, increase the width between the gripper 'fingers'), CL (Close, decrease the width between the gripper 'fingers').
+This table helps represent the calculations requried for the first byte of the 3, this controls the main functions of the Arm Actuators:
+- Shoulder (SH), 
+- Elbow (EL), 
+- Wrist (WR) and 
+- Gripper (GR)
+
+and Actions: 
+- UP (Clockwise when viewed from the side), 
+- DW (Down, Counter-Clockwise), 
+- OP (Open, increase the width between the grippers), 
+- CL (Close, decrease the width)
 
 | Bit Number | Controls        | All Stop | GR CL | GR OP | All UP | All DW | GR CL / EL UP | GR OP / SH DW | EL DW / WR UP / GR OP | Invalid |
 |------------|-----------------|----------|-------|-------|--------|--------|---------------|---------------|-----------------------|---------|
@@ -56,4 +67,41 @@ This table helps represent the calculations requried for the first byte of the 3
 | 1          | Gripper: GR OP  | 0        | 0     | 1     | 1      | 0      | 0             | 0             | 1                     | 0       |
 | 0          | GR CL           | 0        | 1     | 0     | 0      | 1      | 1             | 1             | 0                     | 0       |
 | Byte HEX   |                 | 00       | 01    | 02    | AA     | 55     | 11            | 81            | 26                    |         |
+
+#### Byte 1
+This byte controls the Base (BS), turning the arm either 
+- CCW (Counter-clockwise when viewed from the side) or 
+- CW (Clockwise)
+
+| Bit Number | Controls     | BS CCW | BS CW | BS Stop |
+|------------|--------------|--------|-------|---------|
+| 7          |              |        |       |         |
+| 6          |              |        |       |         |
+| 5          |              |        |       |         |
+| 4          |              |        |       |         |
+| 3          |              |        |       |         |
+| 2          |              |        |       |         |
+| 1          | Base: BS CCW | 1      | 0     | 0       |
+| 0          | BS CW        | 0      | 1     | 0       |
+| Byte HEX   |              | 02     | 01    | 00      |
+
+#### Byte 2
+This byte controls the Light (LED) mounted behind the Gripper than can be useful for targetting:
+- ON 
+- OFF
+
+| Bit Number | Controls      | LED ON | LED OFF |
+|------------|---------------|--------|---------|
+| 7          |               |        |         |
+| 6          |               |        |         |
+| 5          |               |        |         |
+| 4          |               |        |         |
+| 3          |               |        |         |
+| 2          |               |        |         |
+| 1          |               |        |         |
+| 0          | Light: LED ON | 1      | 0       |
+| Byte HEX   |               | 01     | 00      |
+
+
+
 
