@@ -8,20 +8,12 @@ The table layout that is shown represents the layout of the actual arm in the si
 
 Table: 
 
------------------------------
-Gripper Open | Gripper Close
------------------------------
-      | Wrist Up  | 
-      | --------- |
-      | Wrist Down|
-      -------------
-Base  | Elbow Up  | Base
-CCW   | --------- | CW
-      | Elbow Down|
-      -------------
-      | Shld. Up  |
-      | --------- |
-      | Shld. Down|
------------------------------
-Light On    | Light Off
------------------------------
+| Gripper Open |            | Gripper Close |
+|:------------:|:----------:|:-------------:|
+|              |  Wrist Up  |               |
+|              | Wrist Down |               |
+| Base         |  Elbow Up  |          Base |
+| CCW          | Elbow Down |            CW |
+|              |  Shld. Up  |               |
+|              | Shld. Down |               |
+|   Light On   |            |   Light Off   |
