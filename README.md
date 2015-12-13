@@ -7,7 +7,7 @@ Really simple approach to creating a web interface to control the arm remotely. 
 The table layout that is shown represents the layout of the actual arm in the simplest way - note, each activation in this simple interface ends any current action and lasts 1 second.
 
 ### Interface 
-Visit http://<your-ip>:8080 and the table should be displayed. Confirmed working with Raspberry Pi (Server) and iPhone (client).
+Visit http://\<your-ip\>:8080 and the table should be displayed. Confirmed working with Raspberry Pi (Server) and iPhone (client).
 
 | Gripper Open |            | Gripper Close |
 |:------------:|:----------:|:-------------:|
@@ -23,10 +23,16 @@ Visit http://<your-ip>:8080 and the table should be displayed. Confirmed working
 You will need Python Bottle to get this working, but nothing else - it uses the reference Web Server included, but seems easy to change out for something else (see Bottle documentation: http://bottlepy.org/docs/dev/deployment.html). This works on the latest Raspbian on Raspberry Pi.
 
 ```
-> pip install pyusb
-> pip install bottle
-> python roboarm-simple.py
+> sudo pip install --pre pyusb
+> sudo pip install bottle
+> sudo python roboarm-simple.py
 ```
+#### PyUSB problems
+See here for some further information:
+http://raspberrypi.stackexchange.com/questions/6774/installed-pyusb-still-importerror-no-module-named-core
+
+http://stackoverflow.com/questions/22049399/how-to-install-pyusb-on-ubuntu
+
 ### Thanks
 @lizquilty - code from this implementation that is a direct copy of code from this system: https://github.com/lizquilty/roboticarm - full explanation of what is happening within the code.
 
