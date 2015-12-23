@@ -18,13 +18,19 @@ import usb.core, usb.util, time
 
 
 # initialise the Robot Arm from the USB function
-RoboArm = usb.core.find(idVendor=0x1267, idProduct=0x000)
+robo_arm = usb.core.find(idVendor=0x1267, idProduct=0x000)
 
+# initiate the full_command as a complete 'stop'
+usb_command_array = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00']
 
 # movearm object for controlling the Arm
-def MoveArm (ArmCmd, Duration):  # After this, all code until the demo commands must be indented
-	' Function to start the movement '
-	RoboArm.ctrl_transfer(0x40, 6, 0x100, 0, ArmCmd, 1000)
+def move_arm (move_command, app_mode):  # After this, all code until the demo commands must be indented
+
+	# calculate the correct full_command
+	usb_command_array[move_command[1]] = move_command[0];
+
+	# Function to start the movement 
+	robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, full_command, 1000)
 
         # Sim -> Adv. remove the time constraint - leaving the comment in case we need to implement a safety valve
 	# that turns off any movement past say 5 seconds - that would be as the result of the server and client
