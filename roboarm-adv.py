@@ -1,4 +1,4 @@
-# This is a rework of the RoboArm - Simple interface, allowing the motors to be run at the same time, and fully 
+# This is a rework of the RoboArm - Simple interface, allowing the motors to be run at the same time, and fully
 # adopting the correct API, allowing for other operators to use it correctly, without sending invalid commands to the system.
 
 # OWI-535 Robotic Arm - Advanced Web Interface and Controller / Python + Bottle
@@ -17,22 +17,39 @@ import usb.core, usb.util, time
 #	- an advanded web interface that allows multiple inputs at the same time
 
 
-# initialise the Robot Arm from the USB function
+# initialise the Robot Arm variable from the USB.core function - that Vendor ID is specific to the OWI USB interface board for this robot arm
 robo_arm = usb.core.find(idVendor=0x1267, idProduct=0x000)
 
 # initiate the full_command as a complete 'stop'
 usb_command_array = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00']
+compiled_command = [0, 0, 0]
 
 # movearm object for controlling the Arm
 def move_arm (move_command, app_mode):  # After this, all code until the demo commands must be indented
 
 	# calculate the correct full_command
+	# update the usb_command_array with appropriate value for the command and the right place for it in the array
 	usb_command_array[move_command[1]] = move_command[0];
 
-	# Function to start the movement 
-	robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, full_command, 1000)
+	#build up the compiled array in parts so that it's readable
+	compiled_command_arm = usb_command_array[0] + usb_command_array[1] + usb_command_array[2] + usb_command_array[3]
+	compiled_command_base = usb_command_array[4] + usb_command_array[5] + usb_command_array[6] + usb_command_array[7]
+	compiled_command_light = usb_command_array[8] + usb_command_array[9] + usb_command_array[10] + usb_command_array[11]
 
-        # Sim -> Adv. remove the time constraint - leaving the comment in case we need to implement a safety valve
+	compiled_command = [int(compiled_command_arm, 2), int(compiled_command_base, 2), int(compiled_command_light, 2)]
+
+	# Function to start the movement
+	if app_mode == "testing":
+
+		# don't do the USB transfer
+		print compiled_command
+
+	elif app_mode == "live":
+
+		# do the transfer
+		robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, compiled_command, 1000)
+
+    # Sim -> Adv. remove the time constraint - leaving the comment in case we need to implement a safety valve
 	# that turns off any movement past say 5 seconds - that would be as the result of the server and client
 	# loosing connection.
 
@@ -79,6 +96,11 @@ def move_arm (move_command, app_mode):  # After this, all code until the demo co
 #11: <<nothing>>
 #12: light
 
+# Groups:
+# 1: Arm motors
+# 2: Base motor
+# 3: Light
+
 arm_interface_map = {
 	'base-ccw'      : ['10', 7],
 	'base-cw'       : ['01', 7],
@@ -103,82 +125,51 @@ app = Bottle()
 
 @app.route('/')
 def MoveArmInterface():
-	
-	if RoboArm is None: # in case the robotic arm hasn't been found through usb
+
+	if robo_arm is None: # in case the robotic arm hasn't been found through usb
 		app_mode = "testing"
 	else:
 		app_mode = "live"
 
 	# map the URL params and the appropriate movemap
 	if request.params.get('command') in arm_interface_map:
-		get_command = arm_interface_map[request.params.get('command')]
-		MoveArm(get_command, app_mode)
-	
-	else:   
-		moverequest = movemap['light-on']
-		MoveArm(moverequest, Duration)
+		move_command = arm_interface_map[request.params.get('command')]
+		# move_arm(get_command, app_mode)
+
+		# calculate the correct full_command
+		# update the usb_command_array with appropriate value for the command and the right place for it in the array
+		usb_command_array[move_command[1]] = move_command[0];
+
+		#build up the compiled array in parts so that it's readable
+		compiled_command_arm = usb_command_array[0] + usb_command_array[1] + usb_command_array[2] + usb_command_array[3]
+		compiled_command_base = usb_command_array[4] + usb_command_array[5] + usb_command_array[6] + usb_command_array[7]
+		compiled_command_light = usb_command_array[8] + usb_command_array[9] + usb_command_array[10] + usb_command_array[11]
+
+		compiled_command = [hex(int(compiled_command_arm, 2)), hex(int(compiled_command_base, 2)), hex(int(compiled_command_light, 2))]
+
+		# Function to start the movement
+		if app_mode == "testing":
+
+			# don't do the USB transfer
+			print compiled_command
+
+		elif app_mode == "live":
+
+			# do the transfer
+			robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, compiled_command, 1000)
+
+		return template('roboarm_adv_template', app_mode=app_mode, compiled_command=compiled_command)
+
+	else:
+		# moverequest = movemap['light-on']
+		# MoveArm(moverequest, Duration)
 
 		# return template("Welcome to <br />The OWI-535 Robotic Arm control interface.<br />Moving: {{moveaction}}", moveaction=moverequest)
-		
-		return '''
-		<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Robotic Arm</title>
 
-	<style>
-		table {
-			text-align: center;
-			width: 100%;
-		}
+		# return '''
+		# '''
 
-		td {
-			border: 1px solid black;
-		}
-		
-		a {
-			font-size: large;
-		}
-	</style>
-	
-	</head>
-	
-	<body>
-	    <table>
-		    <tr>
-			    <td colspan="2"><a href="/?move=grip-open">Gripper Open</a></td>
-			    <td colspan="2"><a href="/?move=grip-close">Gripper Close</a></td>
-		    </tr>
-		    <tr>
-			    <td rowspan="6"><a href="/?move=base-clockwise">Base CW</a></td>
-			    <td colspan="2"><a href="/?move=wrist-up">Wrist Up</a></td>
-			    <td rowspan="6"><a href="/?move=base-anti-clockwise">Base CCW</a></td>
-		    </tr>
-		    <tr>
-			    <td colspan="2"><a href="/?move=wrist-down">Wrist Down</a></td>
-		    </tr>
-		    <tr>
-			    <td colspan="2"><a href="/?move=elbow-up">Elbow Up</a></td>
-		    </tr>
-		    <tr>
-			    <td colspan="2"><a href="/?move=elbow-down">Elbow Down</a></td>
-		    </tr>
-		    <tr>
-			    <td colspan="2"><a href="/?move=shoulder-up">Shoulder Up</a></td>
-		    </tr>
-		    <tr>
-			    <td colspan="2"><a href="/?move=shoulder-down">Shoulder Down</a></td>
-		    </tr>
-		    <tr>
-			    <td colspan="2"><a href="/?move=light-on">Light On</a></td>
-			    <td colspan="2"><a href="/?move=light-off">Light Off</a></td>
-		    </tr>
-	    </table>
-	</body>
-</html>
-
-		'''
+		return template('roboarm_adv_template', app_mode="initialising", compiled_command="")
 
 run(app, host='0.0.0.0', port=8080)
 
