@@ -27,28 +27,34 @@
 
 	    <table>
 		    <tr>
-			    <td colspan="2"><a href="/?command=gripper-open">Gripper Open</a></td>
-			    <td colspan="2"><a href="/?command=gripper-close">Gripper Close</a></td>
+			    <td colspan="1"><a href="/?command=gripper-open">Gripper Open</a></td>
+				<td colspan="2"><a href="/?command=gripper-stop">Gripper Stop</a></td>
+			    <td colspan="1"><a href="/?command=gripper-close">Gripper Close</a></td>
 		    </tr>
 		    <tr>
-			    <td rowspan="6"><a href="/?command=base-cw">Base CW</a></td>
-			    <td colspan="2"><a href="/?command=wrist-open">Wrist Up</a></td>
-			    <td rowspan="6"><a href="/?command=base-ccw">Base CCW</a></td>
+			    <td rowspan="5"><a href="/?command=base-cw">Base CW</a></td>
+				<td rowspan="2"><a href="/?command=wrist-stop">Stop</a></td>
+			    <td colspan="1"><a href="/?command=wrist-open">Wrist Up</a></td>
+			    <td rowspan="5"><a href="/?command=base-ccw">Base CCW</a></td>
 		    </tr>
 		    <tr>
-			    <td colspan="2"><a href="/?command=wrist-close">Wrist Down</a></td>
+			    <td colspan="1"><a href="/?command=wrist-close">Wrist Close</a></td>
 		    </tr>
 		    <tr>
-			    <td colspan="2"><a href="/?command=elbow-open">Elbow Up</a></td>
+				<td rowspan="2"><a href="/?command=elbow-stop">Stop</a></td>
+			    <td colspan="1"><a href="/?command=elbow-open">Elbow Up</a></td>
 		    </tr>
 		    <tr>
-			    <td colspan="2"><a href="/?command=elbow-close">Elbow Down</a></td>
+			    <td colspan="1"><a href="/?command=elbow-close">Elbow Down</a></td>
 		    </tr>
 		    <tr>
-			    <td colspan="2"><a href="/?command=shoulder-open">Shoulder Up</a></td>
+				<td rowspan="2"><a href="/?command=shoulder-stop">Stop</a></td>
+			    <td colspan="1"><a href="/?command=shoulder-open">Shoulder Up</a></td>
 		    </tr>
 		    <tr>
-			    <td colspan="2"><a href="/?command=shoulder-close">Shoulder Down</a></td>
+				<td rowspan="1"><a href="/?command=base-stop">Stop</a></td>
+			    <td colspan="1"><a href="/?command=shoulder-close">Shoulder Down</a></td>
+				<td rowspan="1"><a href="/?command=base-stop">Stop</a></td>
 		    </tr>
 		    <tr>
 			    <td colspan="2"><a href="/?command=light-on">Light On</a></td>
