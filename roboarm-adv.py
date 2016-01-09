@@ -76,14 +76,14 @@ arm_interface_map = {
 	'gripper-close' : ['01', 3],
 	'gripper-open'	: ['10', 3],
 	'gripper-stop'	: ['00', 3],
-	'wrist-close'	: ['01', 2],
-	'wrist-open'	: ['10', 2],
+	'wrist-close'	: ['10', 2],
+	'wrist-open'	: ['01', 2],
 	'wrist-stop'	: ['00', 2],
-	'elbow-close'	: ['01', 1],
-	'elbow-open'	: ['10', 1],
+	'elbow-close'	: ['10', 1],
+	'elbow-open'	: ['01', 1],
 	'elbow-stop'	: ['00', 1],
-	'shoulder-close': ['01', 0],
-	'shoulder-open'	: ['10', 0],
+	'shoulder-close': ['10', 0],
+	'shoulder-open'	: ['01', 0],
 	'shoulder-stop' : ['00', 0]
 }
 
@@ -123,9 +123,17 @@ def MoveArmInterface():
 		elif app_mode == "live":
 
 			# do the transfer
-			robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, compiled_command, 1000)
+			# debugging - it seems like the compiled_command array comes across as strings, which don't work 
+			print compiled_command
+			print ''.join(compiled_command)
+			print '[' + ', '.join(compiled_command) + ']'
+			list_comp_commd = '[{0:x}, {1:x}, {2:x}]'.format(int(compiled_command[0], 16), int(compiled_command[1], 16), int(compiled_command[2], 16))
+			print list_comp_commd
+			new_list_commd = [int(compiled_command[0], 16), int(compiled_command[1], 16), int(compiled_command[2], 16)]
+			print new_list_commd
+			robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, new_list_commd, 1000)
 
-		return template('roboarm_adv_template', app_mode=app_mode, compiled_command=compiled_command)
+		return template('roboarm_adv_template', app_mode=app_mode, compiled_command=new_list_commd)
 
 	else:
 		# moverequest = movemap['light-on']

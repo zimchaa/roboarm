@@ -21,23 +21,23 @@ def MoveArm (ArmCmd, Duration):  # After this, all code until the demo commands 
 
 	#Stop the movement after waiting a specified duration
 	time.sleep(Duration)
-	ArmCmd = [0, 0, 0]
+	ArmCmd = [0, 0, 1]
 	RoboArm.ctrl_transfer(0x40, 6, 0x100, 0, ArmCmd, 1000)
 
 movemap = {
-	'base-anti-clockwise': [0, 1, 0],
-	'base-clockwise': [0, 2, 0],
-	'shoulder-up': [64, 0, 0],
-	'shoulder-down': [128, 0, 0],
-	'elbow-up': [16, 0, 0],
-	'elbow-down': [32, 0, 0],
-	'wrist-up': [4, 0, 0],
-	'wrist-down': [8, 0, 0],
-	'grip-open': [2, 0, 0],
-	'grip-close': [1, 0, 0],
+	'base-anti-clockwise': [0, 1, 1],
+	'base-clockwise': [0, 2, 1],
+	'shoulder-up': [64, 0, 1],
+	'shoulder-down': [128, 0, 1],
+	'elbow-up': [16, 0, 1],
+	'elbow-down': [32, 0, 1],
+	'wrist-up': [4, 0, 1],
+	'wrist-down': [8, 0, 1],
+	'grip-open': [2, 0, 1],
+	'grip-close': [1, 0, 1],
 	'light-on': [0, 0, 1],
-	'light-off': [0, 0, 0],
-	'stop': [0, 0, 0]
+	'light-off': [0, 0, 1],
+	'stop': [0, 0, 1]
 }
 
 
