@@ -4,8 +4,8 @@
 # OWI-535 Robotic Arm - Advanced Web Interface and Controller / Python + Bottle
 
 # imports
-from bottle import Bottle, run, template, request, TEMPLATE_PATH
-import usb.core, usb.util, time
+from bottle import Bottle, run, template, request
+import usb.core, usb.util
 
 ROBOARM = {
   "description": "OWI-535 Robotic Arm - USB Interface",
@@ -123,7 +123,7 @@ move_command = {"arm":0b00000000, "base":0b00000000, "light":0b00000000}
 def change_move_command(update_move_command, roboarm_components_system, component, feature, verb):
   
   # check that the input is valid against the roboarm_components_system inputs
-  input_exists = check_inputs(roboarm_components_system=, component, feature, verb)
+  input_exists = check_inputs(roboarm_components_system, component, feature, verb)
   
   if input_exists[0]:
     # when receiving all valid inputs we should be cancelling out the current movement using the mask for the associated level (e.g. feature mask)
@@ -150,85 +150,39 @@ def initialise_roboarm(vendor_id=ROBOARM["identification"]["idVendor"], product_
   return usb.core.find(idVendor=vendor_id, idProduct=product_id)
   
 def transfer_roboarm(move_command, ctrl_roboarm=ROBOARM["initialisation"], timeout=1000):
-  if roboarm_device is None:
-    roboarm_device = initialise_roboarm()
+  # attempt to initialise the device 
+  roboarm_device = initialise_roboarm()
   
-  transfer_stats = roboarm_device.ctrl_transfer(ctrl_roboarm["bmRequestType"], ctrl_roboarm["bmRequest"], ctrl_roboarm["wValue"], ctrl_roboarm["wIndex"], move_command, timeout)
+  # perform the actual USB transfer, returning the length of the transfer
+  transfer_stats = roboarm_device.ctrl_transfer(ctrl_roboarm["bmRequestType"], ctrl_roboarm["bmRequest"], ctrl_roboarm["wValue"], ctrl_roboarm["wIndex"], [move_command[0]["arm"], move_command[0]["base"], move_command[0]["light"]], timeout)
   
   return transfer_stats
 
 app = Bottle()
 
 @app.route('/roboarm/<component>/<feature>/<verb>')
-def move_roboarm(component, feature, verb):
+def move_roboarm(component, feature, verb, move_command=move_command):
+  
+  # print out the input parameters
   print("request: component={}, feature={}, verb={}".format(component, feature, verb))
   
+  # print out the current move command
   print("current move_command:{}".format(move_command))
   
+  # update the move_command dictionary
   move_command = change_move_command(move_command, ROBOARM["components"], component, feature, verb)
   
+  # print out the updated move command
   print("new move_command:{}".format(move_command))
   
+  # make the transfer
   transfer_attempt = transfer_roboarm(move_command)
   
+  # print out the result
   print("transfer_attempt:{}".format(transfer_attempt))
 
-# @app.route('/')
-# def MoveArmInterface():
-# 
-# 	if robo_arm is None: # in case the robotic arm hasn't been found through usb
-# 		app_mode = "testing"
-# 	else:
-# 		app_mode = "live"
-# 
-# 	# map the URL params and the appropriate movemap
-# 	if request.params.get('command') in arm_interface_map:
-# 		move_command = arm_interface_map[request.params.get('command')]
-# 		# move_arm(get_command, app_mode)
-# 
-# 		# calculate the correct full_command
-# 		# update the usb_command_array with appropriate value for the command and the right place for it in the array
-# 		usb_command_array[move_command[1]] = move_command[0];
-# 
-# 		#build up the compiled array in parts so that it's readable
-# 		compiled_command_arm = usb_command_array[0] + usb_command_array[1] + usb_command_array[2] + usb_command_array[3]
-# 		compiled_command_base = usb_command_array[4] + usb_command_array[5] + usb_command_array[6] + usb_command_array[7]
-# 		compiled_command_light = usb_command_array[8] + usb_command_array[9] + usb_command_array[10] + usb_command_array[11]
-# 
-# 		# compose the command and represent the values as hex to send to the arm
-# 		compiled_command = [hex(int(compiled_command_arm, 2)), hex(int(compiled_command_base, 2)), hex(int(compiled_command_light, 2))]
-# 
-# 		# Function to start the movement
-# 		if app_mode == "testing":
-# 
-# 			# don't do the USB transfer
-# 			print compiled_command
-# 
-# 		elif app_mode == "live":
-# 
-# 			# do the transfer
-# 			# debugging - it seems like the compiled_command array comes across as strings, which don't work 
-# 			print compiled_command
-# 			print ''.join(compiled_command)
-# 			print '[' + ', '.join(compiled_command) + ']'
-# 			list_comp_commd = '[{0:x}, {1:x}, {2:x}]'.format(int(compiled_command[0], 16), int(compiled_command[1], 16), int(compiled_command[2], 16))
-# 			print list_comp_commd
-# 			new_list_commd = [int(compiled_command[0], 16), int(compiled_command[1], 16), int(compiled_command[2], 16)]
-# 			print new_list_commd
-# 			robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, new_list_commd, 1000)
-# 
-# 		return template('roboarm_adv_template', app_mode=app_mode, compiled_command=compiled_command)
-# 
-# 	else:
-# 		# moverequest = movemap['light-on']
-# 		# MoveArm(moverequest, Duration)
-# 
-# 		# return template("Welcome to <br />The OWI-535 Robotic Arm control interface.<br />Moving: {{moveaction}}", moveaction=moverequest)
-# 
-# 		# return '''
-# 		# '''
-# 
-# 		return template('roboarm_adv_template', app_mode="initialising", compiled_command="")
+  # return the current move command
+  return move_command[0]
 
 run(app, host='0.0.0.0', port=8888)
 
