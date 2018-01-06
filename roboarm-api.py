@@ -4,7 +4,7 @@
 # OWI-535 Robotic Arm - Advanced Web Interface and Controller / Python + Bottle
 
 # imports
-from bottle import Bottle, run, template, request
+from bottle import Bottle, run, template, request, static_file
 import usb.core, usb.util
 
 ROBOARM = {
@@ -183,6 +183,10 @@ def move_roboarm(component, feature, verb, move_command=move_command):
 
   # return the current move command
   return move_command[0]
+
+@app.route('/interface/<filepath:path>')
+def server_static(filepath):
+    return static_file(filepath, root='/home/pi/stuff/roboarm/interface')
 
 run(app, host='0.0.0.0', port=8888)
 

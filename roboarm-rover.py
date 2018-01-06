@@ -134,7 +134,7 @@ def MoveArmInterface():
 			print new_list_commd
 			robo_arm.ctrl_transfer(0x40, 6, 0x100, 0, new_list_commd, 1000)
 
-		return template('roboarm_adv_template', app_mode=app_mode, compiled_command=compiled_command)
+		return template('roboarm_rover_template', app_mode=app_mode, compiled_command=compiled_command)
 
 	else:
 		# moverequest = movemap['light-on']

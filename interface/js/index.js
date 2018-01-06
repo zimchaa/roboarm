@@ -41,9 +41,9 @@ var LINKS = [{
   feature: "shoulder"
 }, {
   colorIndex: "graph-2",
-  ids: ["base-orientation", "base-retain"],
+  ids: ["base-direction", "base-stop"],
   component: "base",
-  feature: "orientation"
+  feature: "direction"
 }];
 
 var ROBOARM = {
@@ -65,12 +65,12 @@ var ROBOARM = {
       description: "The <ARM> components are mounted on this rotating base, with approx. 270deg freedom, clockwise and counterclockwise rotation is considered from the top of the RoboArm",
       mask: 255,
       features: {
-        orientation: {
+        direction: {
           mask: 3,
           actions: {
             ccw: 1,
             cw: 2,
-            retain: 0
+            stop: 0
           }
         }
       }
@@ -389,7 +389,7 @@ var RoboArmApp = function (_React$Component5) {
 
       if (cl_parts[1].component == "base") {
         cl_parts[0].component = "base";
-        cl_parts[0].feature = "orientation";
+        cl_parts[0].feature = "direction";
       }
 
       if (cl_parts[0].component == cl_parts[1].component && cl_parts[0].component != "") {
